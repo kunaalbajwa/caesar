@@ -1,20 +1,23 @@
-from sys import argv #exit
-#print("I know that these are the words the user typed on the command line: ", argv)
-from helpers import alphabet_position, rotate_character
-def encrypt(text, rot):
-#string , integer
-    crypto=''
+
+ALPHABET_LOWERCASE = "abcdefghijklmnopqrstuvwxyz"
+ALPHABET_UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+def alphabet_position(letter):
+    alphabet = ALPHABET_LOWERCASE if letter.islower() else ALPHABET_UPPERCASE
+    return alphabet.index(letter)
+
+def rotate_char(char, rotation):
+    if not char.isalpha():
+        return char
+
+    alphabet = ALPHABET_LOWERCASE if char.islower() else ALPHABET_UPPERCASE
+    new_pos = (alphabet_position(char) + rotation) % 26
+    return alphabet[new_pos]
+
+def encrypt(text, rotation):
+    answer = ""
     for char in text:
-        crypto=crypto + rotate_character(char, rot)
-    return crypto
-
-#print(encrypt("Hello, World!", 5))
-def user_input_is_valid(argv):
-#make a boolean
-    if len(argv)>=2 and argv[1].isdigit():
-        return True
-    else:
-        return False
-
+        answer += rotate_char(char, rotation)
+    return answer
 
 #print(user_input_is_valid())

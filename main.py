@@ -1,25 +1,62 @@
-#!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 import webapp2
+from caesar import *
+from helpers import *
+#put escape function
+page_header = """
+<!DOCTYPE html>
 
-class MainHandler(webapp2.RequestHandler):
+<html>
+    <head>
+    <title>SignUp</title>
+</head>
+<body>
+
+ """
+page_footer= """
+</body>
+</html>
+ """
+
+
+class Index(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Hello world!')
 
-app = webapp2.WSGIApplication([
-    ('/', MainHandler)
-], debug=True)
+        input_form = """
+<p> Enter a message. It will encrypt to a 13
+rotation unless specified.</p>
+    <form action = "/input" method ="post">
+        <label>
+            Message:
+            <input type = "text" name ="message"/>
+        </label>
+
+        <label>
+            Rotation Amount:
+            <input type = "number" name = "rot"/>
+        </label>
+        <input type ="submit" value ="Rotate"/>
+        </form>
+
+        """
+        respond = page_header + input_form + page_footer
+        self.response.write(respond)
+
+class rotate(webapp2.RequestHandler):
+    def post(self):
+        wds= ''
+        rot = 13
+        empty = ''
+        if (self.request.get("message") == ''):
+            empty= "You forgot to type a message! Please do that so we can encrypt. Wouldnt that be fun?"
+            respond = page_header + empty+ page_footer
+        elif (self.request.get("rot") != ''):
+            rot = int(self.request.get("rot"))
+        wds = str(self.request.get("message"))
+        new_wds= encrypt(wds, rot)
+        display= "<p>The previous message: </p>" +wds + "<p>The new message:</p>" + new_wds
+        respond = page_header + display + page_footer
+        self.response.write(respond)
+app= webapp2.WSGIApplication ([
+('/', Index),
+('/input', rotate)
+ ], debug=True)
