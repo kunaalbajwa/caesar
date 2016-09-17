@@ -7,7 +7,7 @@ page_header = """
 
 <html>
     <head>
-    <title>SignUp</title>
+    <title>Caesar</title>
 </head>
 <body>
 
@@ -16,32 +16,37 @@ page_footer= """
 </body>
 </html>
  """
+input_form = """
+<p> Enter a message. It will encrypt to a 13
+rotation unless specified.</p>
+
+<label>
+    Rotation Amount:
+    <input type = "number" name = "rot"/>
+</label>
 
 
+<form action="/rotate" method="post">
+<input type ="submit" value="Rotate"/>
+<label>
+<p>
+    <textarea name="message" rows="10" cols="60">{message}</textarea></p>
+</label>
+
+</form>
+
+"""
+#text substitution
 class Index(webapp2.RequestHandler):
     def get(self):
 
-        input_form = """
-<p> Enter a message. It will encrypt to a 13
-rotation unless specified.</p>
-    <form action = "/input" method ="post">
-        <label>
-            Message:
-            <input type = "text" name ="message"/>
-        </label>
-
-        <label>
-            Rotation Amount:
-            <input type = "number" name = "rot"/>
-        </label>
-        <input type ="submit" value ="Rotate"/>
-        </form>
-
-        """
-        respond = page_header + input_form + page_footer
+        respond = page_header + input_form.format(message="") + page_footer
         self.response.write(respond)
 
+
+
 class rotate(webapp2.RequestHandler):
+    #change like the example and have it change like in the box
     def post(self):
         wds= ''
         rot = 13
@@ -54,9 +59,9 @@ class rotate(webapp2.RequestHandler):
         wds = str(self.request.get("message"))
         new_wds= encrypt(wds, rot)
         display= "<p>The previous message: </p>" +wds + "<p>The new message:</p>" + new_wds
-        respond = page_header + display + page_footer
+        respond = page_header + input_form.format(message=new_wds) + page_footer
         self.response.write(respond)
 app= webapp2.WSGIApplication ([
 ('/', Index),
-('/input', rotate)
+('/rotate', rotate)
  ], debug=True)
